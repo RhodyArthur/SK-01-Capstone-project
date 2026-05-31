@@ -57,7 +57,6 @@ def ingest_globaltechhris_csv(filepath: Path) -> pd.DataFrame:
     if missing_cols:
         logger.warning(f"GlobalTech HRIS CSV is missing expected columns: {missing_cols}")
 
-    df["employee_name"] = df["first_name"] + " " + df["last_name"]
     df["source"] = "globaltech_hris"
     logger.info(f"  Ingested {len(df)} records from GlobalTech HRIS CSV")
     return df
