@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Pipeline — Data Quality Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; }
+    th { background: #343a40; color: white; padding: 8px 12px; text-align: left; }
+    td { padding: 8px 12px; border-bottom: 1px solid #dee2e6; }
+  </style>
+</head>
+<body>
+  <h1>HR Data Integration — Quality Report</h1>
+  <p>Total checks: 15 &nbsp;|&nbsp;
+     Passed: 15 &nbsp;|&nbsp;
+     Failed: 0</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Check</th><th>Status</th><th>Pass Rate</th>
+        <th>Failed / Total</th><th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr style="background:#d4edda"><td>NOT NULL: employee_id</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Every golden record must have an employee_id</td></tr>
+<tr style="background:#d4edda"><td>UNIQUE: employee_id</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>employee_ids must be unique after deduplication</td></tr>
+<tr style="background:#d4edda"><td>REGEX: employee_id</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>employee_ids must follow the GT-XXXXXX or AC-XXXXXX format</td></tr>
+<tr style="background:#d4edda"><td>NOT NULL: first_name</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Every employee must have a first name</td></tr>
+<tr style="background:#d4edda"><td>NOT NULL: last_name</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Every employee must have a last name</td></tr>
+<tr style="background:#d4edda"><td>NOT NULL: email</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>At least 90% of employees should have an email address</td></tr>
+<tr style="background:#d4edda"><td>REGEX: email</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Email addresses must be in a valid format</td></tr>
+<tr style="background:#d4edda"><td>UNIQUE: email</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Email addresses must be unique after deduplication</td></tr>
+<tr style="background:#d4edda"><td>NOT NULL: hire_date</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Every employee must have a hire date</td></tr>
+<tr style="background:#d4edda"><td>DATE RANGE: hire_date</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Hire dates must fall between 1970-01-01 and today</td></tr>
+<tr style="background:#d4edda"><td>NOT NULL: department</td><td><b>PASS</b></td><td>99.6%</td><td>34 / 9099</td><td>Every employee must be assigned to a department</td></tr>
+<tr style="background:#d4edda"><td>VALUES IN SET: department</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9065</td><td>All department values must match the approved taxonomy</td></tr>
+<tr style="background:#d4edda"><td>COLUMN PRESENT: source_systems</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 1</td><td>Dedup step must annotate each record with its contributing source systems</td></tr>
+<tr style="background:#d4edda"><td>MIN ROW COUNT</td><td><b>PASS</b></td><td>100.0%</td><td>0 / 9099</td><td>Golden dataset must contain at least 1,000 employee records</td></tr>
+<tr style="background:#d4edda"><td>GHOST RATE: payroll vs HRIS</td><td><b>PASS</b></td><td>51.7%</td><td>0 / 17597</td><td>Payroll records with no HRIS match should stay below 75%</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>

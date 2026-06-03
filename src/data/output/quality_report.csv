@@ -1,0 +1,16 @@
+check,description,total,passed,failed,pass_rate,status
+NOT NULL: employee_id,Every golden record must have an employee_id,9099,9099,0,1.0,PASS
+UNIQUE: employee_id,employee_ids must be unique after deduplication,9099,9099,0,1.0,PASS
+REGEX: employee_id,employee_ids must follow the GT-XXXXXX or AC-XXXXXX format,9099,9099,0,1.0,PASS
+NOT NULL: first_name,Every employee must have a first name,9099,9099,0,1.0,PASS
+NOT NULL: last_name,Every employee must have a last name,9099,9099,0,1.0,PASS
+NOT NULL: email,At least 90% of employees should have an email address,9099,9099,0,1.0,PASS
+REGEX: email,Email addresses must be in a valid format,9099,9099,0,1.0,PASS
+UNIQUE: email,Email addresses must be unique after deduplication,9099,9099,0,1.0,PASS
+NOT NULL: hire_date,Every employee must have a hire date,9099,9099,0,1.0,PASS
+DATE RANGE: hire_date,Hire dates must fall between 1970-01-01 and today,9099,9099,0,1.0,PASS
+NOT NULL: department,Every employee must be assigned to a department,9099,9065,34,0.9963,PASS
+VALUES IN SET: department,All department values must match the approved taxonomy,9065,9065,0,1.0,PASS
+COLUMN PRESENT: source_systems,Dedup step must annotate each record with its contributing source systems,1,1,0,1.0,PASS
+MIN ROW COUNT,"Golden dataset must contain at least 1,000 employee records",9099,9099,0,1.0,PASS
+GHOST RATE: payroll vs HRIS,Payroll records with no HRIS match should stay below 75%,17597,9099,0,0.5171,PASS
