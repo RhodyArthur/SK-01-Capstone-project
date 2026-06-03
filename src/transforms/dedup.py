@@ -300,7 +300,7 @@ def _annotate_source_systems(
         mask = deduped_df["employee_id"] == match["keeper_id"]
         if not mask.any():
             continue
-        existing = deduped_df.loc[mask, "source_systems"].iloc[0]
+        existing = deduped_df.loc[mask, "source_systems"].values[0]
         dropped_src = match["dropped_source"]
         # split on the delimiter for exact element membership, not substring check
         if dropped_src not in existing.split(","):
@@ -365,20 +365,6 @@ def deduplicate(
     )
 
     ghost_df = _find_ghost_employees(deduped_df, payroll_df)
-
-    # save side outputs so the team can review them
-    output_dir = CONFIG["output_dir"]
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    if not review_df.empty:
-        review_path = output_dir / "probable_matches_review.csv"
-        review_df.to_csv(review_path, index=False)
-        logger.info(f"  Review file written: {review_path}")
-
-    if not ghost_df.empty:
-        ghost_path = output_dir / "ghost_employees.csv"
-        ghost_df.to_csv(ghost_path, index=False)
-        logger.info(f"  Ghost employees file: {ghost_path}")
 
     logger.info("STEP 3 complete.")
     return deduped_df, review_df, ghost_df
