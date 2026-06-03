@@ -104,7 +104,27 @@ def normalize_currency(df: pd.DataFrame) -> pd.DataFrame:
 
     computed = int(df['salary_usd_annual'].notna().sum())
     logger.info(f"  salary_usd_annual computed for {computed}/{len(df)} payroll records")
+
+    df['employee_id'] = df.apply(
+        lambda row: format_employee_id(row['employee_id'], row['company_origin']), axis=1
+    )
     return df
+
+
+def format_benefits_ids(df: pd.DataFrame) -> pd.DataFrame:
+    """Format raw benefits employee IDs to match the namespaced HRIS format.
+
+    All IDs in the benefits XML are plain integers belonging to GlobalTech
+    employees (range 1–14,997). AcquiredCo employees are not present in this
+    benefits source, so every ID is formatted as a GlobalTech ID (GT-XXXXXX).
+    """
+    df = df.copy()
+    df['employee_id'] = df['employee_id'].apply(
+        lambda eid: format_employee_id(eid, "GlobalTech") if pd.notna(eid) else np.nan
+    )
+    logger.info("  Benefits employee IDs namespaced to HRIS format")
+    return df
+
 
 def clean_hris(df: pd.DataFrame) -> pd.DataFrame:
     """Apply all cleaning transformations to the combined HRIS DataFrame.
