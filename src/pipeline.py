@@ -5,6 +5,8 @@ from datetime import datetime
 from config import CONFIG, logger
 from ingestion.ingest import ingest_all_sources
 from transforms.clean import clean_hris, normalize_currency
+from transforms.dedup import deduplicate
+# from quality.validate import validate
 
 
 def run_pipeline() -> None:
@@ -21,14 +23,19 @@ def run_pipeline() -> None:
 
     hris_clean    = clean_hris(result["hris"])
     payroll_clean = normalize_currency(result["payroll"])
-    print(hris_clean[hris_clean['hire_date_flag'] == 'out_of_range'][['employee_id', 'hire_date', 'source']].head(10))
-    # deduped = deduplicate(hris_clean)
 
+    deduped, review_df, ghost_df = deduplicate(hris_clean, payroll_clean)
+
+    # quality_report = validate(deduped, ghost_df)
 
     duration = (datetime.now() - start_time).total_seconds()
     logger.info("=" * 60)
     logger.info("PIPELINE COMPLETE")
     logger.info(f"  Input records:           {input_count:,}")
+    logger.info(f"  Golden records:          {len(deduped):,}")
+    logger.info(f"  Review candidates:       {len(review_df):,}")
+    logger.info(f"  Ghost employees:         {len(ghost_df):,}")
+    # logger.info(f"  Quality checks passed:   {int(quality_report['passed'].sum())}/{len(quality_report)}")
     logger.info(f"  Duration:                {duration:.1f}s")
     logger.info("=" * 60)
 
