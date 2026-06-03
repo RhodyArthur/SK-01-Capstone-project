@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import unicodedata
 from config import logger
-
-_KNOWN_DEPARTMENTS = ['Customer Success', 'Strategy', 'Human Resources', 'Data Science', 'Marketing', 'Communications', 'Legal', 'Engineering', 'Business Development', 'Product', 'Manufacturing', 'Quality Assurance', 'Sales', 'DevOps', 'Information Technology', 'Operations', 'Finance', 'Supply Chain']
+from utils import format_employee_id, KNOWN_DEPARTMENTS
 
 _FREQUENCY_MULTIPLIER = {"Annual": 1, "Monthly": 12, "Bi-Weekly": 26}
 
@@ -14,26 +13,13 @@ def namespace_employee_ids(df: pd.DataFrame) -> pd.DataFrame:
     if 'company_origin' not in df.columns:
         logger.warning("No company origin column found")
         return df
-    
-    def namespace_id(row):
-        if pd.isna(row['employee_id']):
-            return np.nan
-        if row['company_origin'] == 'GlobalTech':
-            return f"GT-{int(row['employee_id']):06d}"
-        elif row['company_origin'] == 'AcquiredCo':
-            return f"AC-{int(str(row['employee_id']).split('_')[-1]):06d}"
-        return row['employee_id']
-    df['employee_id'] = df.apply(namespace_id, axis=1)
 
-    def manager_namespace_id(row):
-        if pd.isna(row['manager_id']):
-            return np.nan
-        if row['company_origin'] == 'GlobalTech':
-            return f"GT-{int(row['manager_id']):06d}"
-        elif row['company_origin'] == 'AcquiredCo':
-            return f"AC-{int(str(row['manager_id']).split('_')[-1]):06d}"
-        return row['manager_id']
-    df['manager_id'] = df.apply(manager_namespace_id, axis=1)
+    df['employee_id'] = df.apply(
+        lambda row: format_employee_id(row['employee_id'], row['company_origin']), axis=1
+    )
+    df['manager_id'] = df.apply(
+        lambda row: format_employee_id(row['manager_id'], row['company_origin']), axis=1
+    )
     return df
 
 # name standardization
@@ -65,7 +51,7 @@ def map_departments(df: pd.DataFrame) -> pd.DataFrame:
         logger.warning("No department column found")
         return df
 
-    unknown_mask = ~df['department'].isin(_KNOWN_DEPARTMENTS) & df['department'].notna()
+    unknown_mask = ~df['department'].isin(KNOWN_DEPARTMENTS) & df['department'].notna()
     unknown_count = int(unknown_mask.sum())
 
     if unknown_count:
