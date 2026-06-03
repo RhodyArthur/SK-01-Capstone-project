@@ -6,7 +6,7 @@ from config import CONFIG, logger
 from ingestion.ingest import ingest_all_sources
 from transforms.clean import clean_hris, normalize_currency
 from transforms.dedup import deduplicate
-# from quality.validate import validate
+from quality.validate import validate
 
 
 def run_pipeline() -> None:
@@ -26,7 +26,7 @@ def run_pipeline() -> None:
 
     deduped, review_df, ghost_df = deduplicate(hris_clean, payroll_clean)
 
-    # quality_report = validate(deduped, ghost_df)
+    quality_report = validate(deduped, ghost_df)
 
     duration = (datetime.now() - start_time).total_seconds()
     logger.info("=" * 60)
@@ -35,7 +35,7 @@ def run_pipeline() -> None:
     logger.info(f"  Golden records:          {len(deduped):,}")
     logger.info(f"  Review candidates:       {len(review_df):,}")
     logger.info(f"  Ghost employees:         {len(ghost_df):,}")
-    # logger.info(f"  Quality checks passed:   {int(quality_report['passed'].sum())}/{len(quality_report)}")
+    logger.info(f"  Quality checks passed:   {int((quality_report['status'] == 'PASS').sum())}/{len(quality_report)}")
     logger.info(f"  Duration:                {duration:.1f}s")
     logger.info("=" * 60)
 
